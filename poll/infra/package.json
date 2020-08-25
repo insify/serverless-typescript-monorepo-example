@@ -1,0 +1,8 @@
+{
+  "name": "@poll/infra",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "serverless-pseudo-parameters": "^2.5.0"
+  }
+}

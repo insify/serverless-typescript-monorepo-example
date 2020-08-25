@@ -1,0 +1,27 @@
+@font-face {
+  font-family: Raleway;
+  src: url("./assets/raleway-regular.woff") format("woff");
+}
+
+.App {
+    margin-top: 50px;
+    padding: 20px 20px 5px 20px;
+    background-color: whitesmoke;
+}
+
+.container {
+    max-width: 600px;
+}
+
+label {
+    font-weight: 400;
+}
+
+.row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.question {
+    font-weight: bold;
+}

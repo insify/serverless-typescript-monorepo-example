@@ -1,0 +1,73 @@
+service: poll
+
+plugins:
+  - serverless-plugin-typescript
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: eu-west-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: ${cf:poll-infra-${self:provider.stage}.PollTableArn}
+
+custom:
+  poll_table_name: ${cf:poll-infra-${self:provider.stage}.PollTableName}
+
+functions:
+  create:
+    handler: src/poll.create
+    environment:
+      POLL_TABLE: ${self:custom.poll_table_name}
+    events:
+      - http:
+          path: poll
+          method: post
+          cors: true
+
+  getPoll:
+    handler: src/poll.getPoll
+    environment:
+      POLL_TABLE: ${self:custom.poll_table_name}
+    events:
+      - http:
+          path: poll/{id}
+          method: get
+          cors: true
+          request:
+            parameters:
+              id: true
+
+  vote:
+    handler: src/poll.vote
+    environment:
+      POLL_TABLE: ${self:custom.poll_table_name}
+    events:
+      - http:
+          path: poll/{id}
+          method: post
+          cors: true
+          request:
+            parameters:
+              id: true
+
+  getSummary:
+    handler: src/poll.getSummary
+    environment:
+      POLL_TABLE: ${self:custom.poll_table_name}
+    events:
+      - http:
+          path: poll/{id}/summary
+          method: get
+          cors: true
+          request:
+            parameters:
+              id: true

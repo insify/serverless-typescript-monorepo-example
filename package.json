@@ -1,0 +1,17 @@
+{
+  "name": "react-sls-monorepo-example",
+  "version": "1.0.0",
+  "description": "An example of a project built on Serverless and React and organized as a monorepo",
+  "main": "index.js",
+  "repository": "https://github.com/alexeyu/react-sls-monorepo-example.git",
+  "author": "Oleksii Ustenko",
+  "license": "MIT",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "poll/*"
+    ]
+  },
+  "devDependencies": {
+  }
+}

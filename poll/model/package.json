@@ -1,0 +1,14 @@
+{
+  "name": "@poll/model",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": true,
+  "main": "dist/poll.js",
+  "types": "dist/poll.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.2"
+  }
+}

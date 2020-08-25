@@ -1,0 +1,38 @@
+service: poll-infra
+
+plugins:
+  - serverless-pseudo-parameters
+
+provider:
+  name: aws
+  region: eu-west-1
+  stage: ${opt:stage, 'dev'}
+
+custom:
+  poll_table_name: ${self:provider.stage}_poll
+
+resources:
+  Resources:
+    PollTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${self:custom.poll_table_name}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+  Outputs:
+    PollTableName:
+      Value: ${self:custom.poll_table_name}
+      Export:
+        Name: ${self:provider.stage}-poll-table-name
+    PollTableArn:
+      Value: arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.poll_table_name}
+      Export:
+        Name: ${self:provider.stage}-poll-table-arn
