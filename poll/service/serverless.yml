@@ -1,7 +1,7 @@
 service: poll
 
 plugins:
-  - serverless-plugin-typescript
+  - serverless-webpack
 
 provider:
   name: aws
@@ -20,6 +20,12 @@ provider:
       Resource: ${cf:poll-infra-${self:provider.stage}.PollTableArn}
 
 custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    packager: 'yarn'
+    includeModules:
+      forceExclude: aws-sdk
+
   poll_table_name: ${cf:poll-infra-${self:provider.stage}.PollTableName}
 
 functions:
