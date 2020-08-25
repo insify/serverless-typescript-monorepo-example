@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
+  "workspaces": {
+    "nohoist": [
+      "shortid",
+      "@poll/model"
+    ]
+  },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.59",
     "@types/node": "^14.0.27",
