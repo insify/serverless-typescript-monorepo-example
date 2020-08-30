@@ -24,7 +24,7 @@ custom:
 
 functions:
   create:
-    handler: src/poll.create
+    handler: src/creator.create
     environment:
       POLL_TABLE: ${self:custom.poll_table_name}
     events:
