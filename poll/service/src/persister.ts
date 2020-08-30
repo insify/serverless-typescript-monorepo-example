@@ -1,6 +1,5 @@
 import { DynamoDB } from "aws-sdk";
 import { Poll, PollResult, PollSummary } from "@poll/model";
-import shortid from "shortid";
 import { AttributeMap, DocumentClient } from "aws-sdk/clients/dynamodb";
 import {
   Result,
@@ -10,12 +9,15 @@ import {
   propagateFailure,
 } from "./result-model";
 
+export interface PollItem {
+  [column: string]: number | string | Poll;
+  id: string;
+  poll: Poll;
+}
+
 const dynamoDb = new DynamoDB.DocumentClient();
 
-export const store = async (poll: Poll): Promise<Result<string>> => {
-  const id = shortid.generate();
-  const item: any = { id, poll };
-  poll.options.forEach((_, index) => (item[attrName(index)] = 0));
+export const store = async (item: PollItem): Promise<Result<string>> => {
   const params = {
     TableName: process.env.POLL_TABLE || "",
     Item: item,
@@ -24,7 +26,7 @@ export const store = async (poll: Poll): Promise<Result<string>> => {
   if (result.$response.error) {
     return fromAwsError(result.$response.error);
   }
-  return success(id);
+  return success(item.id);
 };
 
 export const getPollById = async (id: string): Promise<Result<Poll>> => {
@@ -43,7 +45,7 @@ export const countVote = async (
     ...getByIdParams(id),
     UpdateExpression: "set #option = #option + :val",
     ExpressionAttributeNames: {
-      "#option": attrName(optionIndex),
+      "#option": `${optionIndex}`,
     },
     ExpressionAttributeValues: {
       ":val": 1,
@@ -61,13 +63,12 @@ export const getSummary = async (id: string): Promise<Result<PollSummary>> => {
   if (!itemOrError.result) {
     return propagateFailure(itemOrError);
   }
-  const item = itemOrError.result;
-  const poll = item["poll"] as Poll;
+  const item = itemOrError.result as PollItem;
   const result: PollResult = {};
-  poll.options.forEach((option, index) => {
-    result[option] = Number(item[attrName(index)]);
+  item.poll.options.forEach((option, index) => {
+    result[option] = Number(item[`${index}`]);
   });
-  return success({ topic: poll.topic, result });
+  return success({ topic: item.poll.topic, result });
 };
 
 const getById = async (id: string): Promise<Result<AttributeMap>> => {
@@ -86,8 +87,4 @@ const getByIdParams = (id: string): DocumentClient.GetItemInput => {
     TableName: process.env.POLL_TABLE || "",
     Key: { id },
   };
-};
-
-const attrName = (index: number): string => {
-  return `o${index}`;
 };
