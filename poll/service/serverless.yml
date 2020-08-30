@@ -1,7 +1,7 @@
 service: poll
 
 plugins:
-  - serverless-plugin-typescript
+  - serverless-plugin-monorepo
 
 provider:
   name: aws
@@ -21,6 +21,12 @@ provider:
 
 custom:
   poll_table_name: ${cf:poll-infra-${self:provider.stage}.PollTableName}
+
+package:
+  exclude:
+    - src/*.ts
+    - node_modules/.bin/**
+    - '*.json'
 
 functions:
   create:
