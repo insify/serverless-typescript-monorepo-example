@@ -109,3 +109,6 @@ dist
 
 # VS Code
 .vscode
+
+# Webpack cache
+.webpackCache
