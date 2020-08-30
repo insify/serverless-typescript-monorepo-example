@@ -14,8 +14,11 @@ Prerequisites:
 * React
 * yarn
 * serverless
+* yalc -- additionally for this branch
 
 ```
+cd poll/model && yalc publish
+cd poll/service && yalc update
 yarn
 cd poll/infra && sls deploy # Will create all necessay infrastructure.
 cd poll/service && sls deploy # Will deploy Lambda functions

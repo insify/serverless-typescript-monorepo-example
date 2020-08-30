@@ -3,7 +3,7 @@
   "packages": {
     "@poll/model": {
       "signature": "7ac4d8aceb70f3d3dab4f94ac680b042",
-      "file": true
+      "pure": true
     }
   }
 }
