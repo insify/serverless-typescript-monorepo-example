@@ -1,17 +1,9 @@
 {
-  "include": ["**/src/**/*.ts"],
-  "exclude": ["node_modules"],
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "target": "es5",
+    "lib": ["es2015"],
     "rootDir": "src/",
-    "lib": ["es2015", "dom"],
-    "esModuleInterop": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
     "declaration": true
   }
