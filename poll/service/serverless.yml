@@ -23,10 +23,10 @@ custom:
   webpack:
     webpackConfig: 'webpack.config.js'
     packager: 'yarn'
-    includeModules:
-      forceExclude: aws-sdk
-
   poll_table_name: ${cf:poll-infra-${self:provider.stage}.PollTableName}
+
+package:
+  individually: true
 
 functions:
   create:
