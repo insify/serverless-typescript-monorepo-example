@@ -2,6 +2,7 @@ service: poll
 
 plugins:
   - serverless-plugin-typescript
+  - serverless-plugin-optimize
 
 provider:
   name: aws
@@ -21,6 +22,9 @@ provider:
 
 custom:
   poll_table_name: ${cf:poll-infra-${self:provider.stage}.PollTableName}
+
+package:
+  individually: true
 
 functions:
   create:
