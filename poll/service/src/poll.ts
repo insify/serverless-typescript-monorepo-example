@@ -1,51 +1,53 @@
 import { APIGatewayEvent } from "aws-lambda";
 import { Response, response } from "./response";
 import { Poll } from "@poll/model";
-import {
-  store,
-  getPollById,
-  countVote,
-  getSummary as getPollSummary,
-} from "./persister";
+import { store, getPollById, countVote, getSummary } from "./persister";
+import { failure } from "./result-model";
 
 export const create = async (event: APIGatewayEvent): Promise<Response> => {
-  return response(await store(toPoll(event)));
+  const pollOrError = toPoll(event);
+  if (typeof pollOrError === "string") {
+    return response(failure(pollOrError));
+  }
+  return response(await store(pollOrError));
 };
 
 export const getPoll = async (event: APIGatewayEvent): Promise<Response> => {
-  return response(await getPollById(getId(event)));
+  if (!event.pathParameters?.id) {
+    return response(failure("Please provide a poll id"));
+  }
+  return response(await getPollById(event.pathParameters.id));
 };
 
 export const vote = async (event: APIGatewayEvent): Promise<Response> => {
-  ensure(() => !!event.body, "Please provide an answer id");
-  const { option } = JSON.parse(event.body!);
-  const result = await countVote(getId(event), parseInt(option));
+  if (!event.body) {
+    return response(failure("Please provide an answer id"));
+  }
+  if (!event.pathParameters?.id) {
+    return response(failure("Please provide a poll id"));
+  }
+  const { option } = JSON.parse(event.body);
+  const result = await countVote(event.pathParameters.id, Number(option));
   return response(result);
 };
 
-export const getSummary = async (event: APIGatewayEvent): Promise<Response> => {
-  return response(await getPollSummary(getId(event)));
-};
-
-const toPoll = (event: APIGatewayEvent): Poll => {
-  ensure(() => !!event.body, "Please provide a topic");
-  const poll = JSON.parse(event.body!) as Poll;
-  ensure(() => !!poll.topic, "Please provide a topic");
-  ensure(
-    () => !!poll.options && poll.options.length > 1,
-    "Please provide more than one answer"
-  );
-  return poll;
-};
-
-const ensure = (expr: () => boolean, message: string) => {
-  if (!expr()) {
-    throw new Error(message);
+export const summary = async (event: APIGatewayEvent): Promise<Response> => {
+  if (!event.pathParameters?.id) {
+    return response(failure("Please provide a poll id"));
   }
+  return response(await getSummary(event.pathParameters.id));
 };
 
-const getId = (event: APIGatewayEvent): string => {
-  const id = event.pathParameters?.id;
-  ensure(() => !!id, "Please provide a poll id");
-  return id!;
+const toPoll = (event: APIGatewayEvent): Poll | string => {
+  if (!event.body) {
+    return "Please provide data.";
+  }
+  const poll = JSON.parse(event.body) as Poll;
+  if (!poll.topic) {
+    return "Please provide a topic.";
+  }
+  if (!poll.options || poll.options.length <= 1) {
+    return "Please provide more than one answer";
+  }
+  return poll;
 };
